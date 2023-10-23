@@ -20,7 +20,7 @@ app.use(bodyParser.json({ limit: "500MB" })); // Tăng giới hạn kích thư�
 // Định tuyến các API endpoint
 require("./src/app/authentication/router")(app, io);
 
-const port = process.env.PORT || 3300;
+const port = process.env.PORT || 3100;
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
