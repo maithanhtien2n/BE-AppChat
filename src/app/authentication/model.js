@@ -99,6 +99,12 @@ module.exports = {
         ? onImagePath(room_image.name, "files-message/")
         : undefined;
 
+      const room = await Room.findOne({ _id: room_id });
+
+      if (room.room_image && room_image) {
+        onDeleteFile(room.room_image, "files-message/");
+      }
+
       let body = {};
 
       if (room_name) {
@@ -109,11 +115,11 @@ module.exports = {
         body.room_image = room_image ? onUrlFile(host, filePath) : undefined;
       }
 
-      const room = await Room.updateOne({ _id: room_id }, body);
+      const roomUpdate = await Room.updateOne({ _id: room_id }, body);
 
       if (room_image) onSaveFile(filePath, room_image.base64);
 
-      return room;
+      return roomUpdate;
     } catch (error) {
       throw error;
     }
