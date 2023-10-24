@@ -33,6 +33,15 @@ module.exports = {
     });
   },
 
+  updateRoomCT: async (req, res) => {
+    const { room_id, room_name, room_image } = req.body;
+    await onResponse(req, res, model.updateRoomMD, {
+      checkData: ["room_id"],
+      data: { room_id, room_name, room_image, host: req.headers.host },
+      message: "Cập nhật thông tin phòng thành công!",
+    });
+  },
+
   getRoomCT: async (req, res) => {
     const { account_id, room_id } = req.query;
     await onResponse(req, res, model.getRoomMD, {

@@ -71,7 +71,11 @@ module.exports = {
 
   createRoomMD: async ({ room_name, members }) => {
     try {
-      const room = await Room.create({ room_name, members });
+      const room = await Room.create({
+        room_name,
+        room_admin: members,
+        members,
+      });
 
       const message = await Message.create({
         sender: members,
@@ -82,6 +86,32 @@ module.exports = {
         { _id: room._id },
         { $push: { messages: message?._id } }
       );
+
+      return room;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  updateRoomMD: async ({ room_id, room_name, room_image, host }) => {
+    try {
+      const filePath = room_image
+        ? onImagePath(room_image.name, "files-message/")
+        : undefined;
+
+      let body = {};
+
+      if (room_name) {
+        body.room_name = room_name;
+      }
+
+      if (room_image) {
+        body.room_image = room_image ? onUrlFile(host, filePath) : undefined;
+      }
+
+      const room = await Room.updateOne({ _id: room_id }, body);
+
+      if (room_image) onSaveFile(filePath, room_image.base64);
 
       return room;
     } catch (error) {

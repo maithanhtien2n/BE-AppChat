@@ -34,16 +34,31 @@ module.exports = (router, io) => {
   router.get(`${commonRoute}/user`, authenticateToken, controller.userInfoCT);
 
   // API tạo phòng
-  router.post(`${commonRoute}/room`, controller.createRoomCT);
+  router.post(
+    `${commonRoute}/room`,
+    authenticateToken,
+    controller.createRoomCT
+  );
+
+  // API cập nhật thông tin phòng
+  router.put(
+    `${commonRoute}/room/update`,
+    authenticateToken,
+    controller.updateRoomCT
+  );
 
   // API lấy thông tin phòng
-  router.get(`${commonRoute}/room`, controller.getRoomCT);
+  router.get(`${commonRoute}/room`, authenticateToken, controller.getRoomCT);
 
   // API lấy danh sách tin nhắn theo id người dùng
-  router.get(`${commonRoute}/rooms/:id`, controller.getRoomsCT);
+  router.get(
+    `${commonRoute}/rooms/:id`,
+    authenticateToken,
+    controller.getRoomsCT
+  );
 
   // API tham gia phòng
-  router.put(`${commonRoute}/room`, controller.joinRoomCT);
+  router.put(`${commonRoute}/room`, authenticateToken, controller.joinRoomCT);
 
   // Socket.io -------------------------------------------
 

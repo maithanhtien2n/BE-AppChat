@@ -15,6 +15,8 @@ const accountSchema = new Schema(
 const roomSchema = new Schema(
   {
     room_name: { type: String, required: true },
+    room_image: { type: String, required: false },
+    room_admin: { type: String, required: true },
     members: [{ type: Schema.Types.ObjectId, ref: "Account" }],
     messages: [{ type: Schema.Types.ObjectId, ref: "Message" }],
   },
