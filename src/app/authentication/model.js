@@ -1,4 +1,4 @@
-const { Account, Room, Message } = require("./config");
+const { Account, Room, Message, Posts } = require("./config");
 const { throwError } = require("../../utils/index");
 const {
   onUrlFile,
@@ -200,6 +200,58 @@ module.exports = {
     }
   },
 
+  createPostsMD: async ({ account_id, content, room_id, file, host }) => {
+    try {
+      const filePath = file
+        ? onImagePath(file.name, "files-message/")
+        : undefined;
+
+      const posts = await Posts.create({
+        poster: account_id,
+        content,
+        room_id: room_id || "",
+        file: file ? onUrlFile(host, filePath) : "",
+        type: file ? file.type : "",
+      });
+
+      if (file) onSaveFile(filePath, file.base64);
+
+      return posts;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getAllPostsMD: async () => {
+    try {
+      const posts = await Posts.find().populate({
+        path: "poster",
+        model: Account,
+        select: "user_name",
+      });
+      return posts.reverse();
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getPostsDetailMD: async ({ posts_id }) => {
+    try {
+      const postsDetail = await Posts.findOne({ _id: posts_id }).populate({
+        path: "poster",
+        model: Account,
+        select: "user_name",
+      });
+
+      return postsDetail;
+    } catch (error) {
+      if (error?.stringValue) {
+        throwError(201, "Bài viết không tồn tại!");
+      }
+      throw error;
+    }
+  },
+
   // Socket.io -------------------------------------------
 
   createMessageMD: async ({ room_id, sender, content, image, host }) => {
@@ -255,6 +307,50 @@ module.exports = {
         });
 
       return room;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  likePostsMD: async ({ posts_id, people_like }) => {
+    try {
+      const post = await Posts.findOne({
+        _id: posts_id,
+        likes: { $in: [people_like] },
+      });
+
+      if (post) {
+        await Posts.updateOne(
+          { _id: posts_id },
+          {
+            $pull: { likes: people_like },
+          }
+        );
+      } else {
+        await Posts.updateOne(
+          { _id: posts_id },
+          {
+            $push: { likes: people_like },
+          }
+        );
+      }
+
+      const posts = await Posts.find().populate({
+        path: "poster",
+        model: Account,
+        select: "user_name",
+      });
+
+      const postsDetail = await Posts.findOne({ _id: posts_id }).populate({
+        path: "poster",
+        model: Account,
+        select: "user_name",
+      });
+
+      return {
+        allPosts: posts.reverse(),
+        postsDetail,
+      };
     } catch (error) {
       throw error;
     }

@@ -63,6 +63,34 @@ module.exports = {
     });
   },
 
+  createPostsCT: async (req, res) => {
+    const { account_id, content, room_id, file } = req.body;
+    await onResponse(req, res, model.createPostsMD, {
+      checkData: ["account_id", "content"],
+      data: {
+        account_id,
+        content,
+        room_id,
+        file,
+        host: req.headers.host,
+      },
+      message: "Bài viết của bạn đã được tải lên thành công!",
+    });
+  },
+
+  getAllPostsCT: async (req, res) => {
+    await onResponse(req, res, model.getAllPostsMD, {
+      data: {},
+    });
+  },
+
+  getPostsDetailCT: async (req, res) => {
+    const posts_id = req.params.id;
+    await onResponse(req, res, model.getPostsDetailMD, {
+      data: { posts_id },
+    });
+  },
+
   // Socket.io -------------------------------------------
 
   createMessageCT: async (data, host) => {
@@ -75,6 +103,14 @@ module.exports = {
         image,
         host,
       });
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  likePostsCT: async (data) => {
+    try {
+      return await model.likePostsMD(data);
     } catch (error) {
       throw error;
     }

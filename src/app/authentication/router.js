@@ -60,11 +60,19 @@ module.exports = (router, io) => {
   // API tham gia phòng
   router.put(`${commonRoute}/room`, authenticateToken, controller.joinRoomCT);
 
+  // API tạo mới bài viết
+  router.post(`${commonRoute}/posts`, controller.createPostsCT);
+
+  // API lấy danh sách bài viết
+  router.get(`${commonRoute}/posts`, controller.getAllPostsCT);
+
+  // API lấy chi tiết bài viết
+  router.get(`${commonRoute}/posts/:id`, controller.getPostsDetailCT);
+
   // Socket.io -------------------------------------------
 
   io.on("connection", (socket) => {
     console.log("Đã kết nối!");
-
     socket.on(`chat-message`, async (data) => {
       if (data?.content || data?.image) {
         const res = await controller.createMessageCT(
@@ -72,6 +80,18 @@ module.exports = (router, io) => {
           socket.request.headers.host
         );
         io.emit(`chat-message-${data?.room_id}`, { message: res, data });
+      }
+    });
+
+    // Xử lý tính năng like
+    socket.on(`like-posts`, async (data) => {
+      if (data) {
+        const res = await controller.likePostsCT(data);
+        console.log("nhận");
+        io.emit(`like-posts`, {
+          allPosts: res?.allPosts,
+          postsDetail: res?.postsDetail,
+        });
       }
     });
   });
