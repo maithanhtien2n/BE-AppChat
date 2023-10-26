@@ -99,7 +99,6 @@ module.exports = (router, io) => {
     socket.on(`like-posts`, async (data) => {
       if (data) {
         const res = await controller.likePostsCT(data);
-        console.log("nhận");
         io.emit(`like-posts`, {
           allPosts: res?.allPosts,
           postsDetail: res?.postsDetail,
