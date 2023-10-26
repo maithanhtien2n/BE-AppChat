@@ -61,13 +61,25 @@ module.exports = (router, io) => {
   router.put(`${commonRoute}/room`, authenticateToken, controller.joinRoomCT);
 
   // API tạo mới bài viết
-  router.post(`${commonRoute}/posts`, controller.createPostsCT);
+  router.post(
+    `${commonRoute}/posts`,
+    authenticateToken,
+    controller.createPostsCT
+  );
 
   // API lấy danh sách bài viết
-  router.get(`${commonRoute}/posts`, controller.getAllPostsCT);
+  router.get(
+    `${commonRoute}/posts`,
+    authenticateToken,
+    controller.getAllPostsCT
+  );
 
   // API lấy chi tiết bài viết
-  router.get(`${commonRoute}/posts/:id`, controller.getPostsDetailCT);
+  router.get(
+    `${commonRoute}/posts/:id`,
+    authenticateToken,
+    controller.getPostsDetailCT
+  );
 
   // Socket.io -------------------------------------------
 
